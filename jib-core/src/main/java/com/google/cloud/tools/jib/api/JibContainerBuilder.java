@@ -117,8 +117,8 @@ public class JibContainerBuilder {
    *   <li>{@code directory/}
    * </ul>
    *
-   * and the destination to copy to is {@code /path/in/container}, then the new layer will have the
-   * following entries for the container file system:
+   * <p>and the destination to copy to is {@code /path/in/container}, then the new layer will have
+   * the following entries for the container file system:
    *
    * <ul>
    *   <li>{@code /path/in/container/fileA}
@@ -322,6 +322,7 @@ public class JibContainerBuilder {
     containerConfigurationBuilder.addVolume(volume);
     return this;
   }
+
   /**
    * Sets the ports to expose from the container. Ports exposed will allow ingress traffic. This
    * replaces any previously-set exposed ports.

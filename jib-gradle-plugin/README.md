@@ -46,7 +46,7 @@ In your Gradle Java project, add the plugin to your `build.gradle`:
 
 ```groovy
 plugins {
-  id 'com.google.cloud.tools.jib' version '1.8.0'
+  id 'com.google.cloud.tools.jib' version '2.0.0'
 }
 ```
 
@@ -271,13 +271,18 @@ Property | Type | Default | Description
 --- | --- | --- | ---
 `jib.httpTimeout` | `int` | `20000` | HTTP connection/read timeout for registry interactions, in milliseconds. Use a value of `0` for an infinite timeout.
 `jib.useOnlyProjectCache` | `boolean` | `false` | If set to true, Jib does not share a cache between different Maven projects.
-`jib.baseImageCache` | `File` | `[user cache home]/google-cloud-tools-java/jib` | Sets the directory to use for caching base image layers. This cache can (and should) be shared between multiple images.
+`jib.baseImageCache` | `File` | *Platform-dependent*\*\*\* | Sets the directory to use for caching base image layers. This cache can (and should) be shared between multiple images.
 `jib.applicationCache` | `File` | `[project dir]/target/jib-cache` | Sets the directory to use for caching application layers. This cache can be shared between multiple images.
 `jib.console` | `String` | *None* | If set to `plain`, Jib will print plaintext log messages rather than display a progress bar during the build.
 
 *\* If you configure `args` while `entrypoint` is set to `'INHERIT'`, the configured `args` value will take precedence over the CMD propagated from the base image.*
 
 *\*\* Uses the main class defined in the `jar` task or tries to find a valid main class.*
+
+*\*\*\* The default base image cache is in the following locations on each platform:*
+ * *Linux: `[cache root]/google-cloud-tools-java/jib/`, where `[cache root]` is `$XDG_CACHE_HOME` (`$HOME/.cache/` if not set)*
+ * *Mac: `[cache root]/Google/Jib/`, where `[cache root]` is `$XDG_CACHE_HOME` (`$HOME/Library/Caches/` if not set)*
+ * *Windows: `[cache root]\Google\Jib\Cache`, where `[cache root]` is `$XDG_CACHE_HOME` (`%LOCALAPPDATA%` if not set)*
 
 ### Example
 
@@ -327,6 +332,8 @@ Prefix | Example | Type
 
 You can add arbitrary, non-classpath files to the image by placing them in a `src/main/jib` directory. This will copy all files within the `jib` folder to the image's root directory, maintaining the same structure (e.g. if you have a text file at `src/main/jib/dir/hello.txt`, then your image will contain `/dir/hello.txt` after being built with Jib).
 
+Note that Jib does not follow symbolic links in the container image.  If a symbolic link is present, _it will be removed_ prior to placing the files and directories.
+
 You can configure different directories by using the `jib.extraDirectories.paths` parameter in your `build.gradle`:
 ```groovy
 jib {
@@ -348,8 +355,6 @@ jib {
   }
 }
 ```
-
-Note that Jib does not follow symbolic links.  If a symbolic link is present, it will be removed prior to placing the files and directories.
 
 ### Authentication Methods
 
@@ -444,6 +449,10 @@ jib {
 ## Frequently Asked Questions (FAQ)
 
 See the [Jib project FAQ](../docs/faq.md).
+
+## Privacy
+
+See the [Privacy page](docs/privacy.md).
 
 ## Upcoming Features
 

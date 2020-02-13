@@ -5,7 +5,20 @@ All notable changes to this project will be documented in this file.
 
 ### Added
 
+### Changed
+
+### Fixed
+
+- Fixed a `skaffold init` issue with projects containing submodules specifying different parent poms. ([#2262](https://github.com/GoogleContainerTools/jib/issues/2262))
+- Fixed authentication failure with error `server did not return 'WWW-Authenticate: Bearer' header` in certain cases (for example, on OpenShift). ([#2258](https://github.com/GoogleContainerTools/jib/issues/2258))
+- Fixed an issue where using local Docker images (by `docker://...`) on Windows caused an error. ([#2270](https://github.com/GoogleContainerTools/jib/issues/2270))
+
+## 2.0.0
+
+### Added
+
 - Added json output file for image metadata after a build is complete. Writes to `target/jib-image.json` by default, configurable with `<outputPaths><imageJson>`. ([#2227](https://github.com/GoogleContainerTools/jib/pull/2227))
+- Added automatic update checks. Jib will now display a message if there is a new version of Jib available. See the [privacy page](../docs/privacy.md) for more details. ([#2193](https://github.com/GoogleContainerTools/jib/issues/2193))
 
 ### Changed
 

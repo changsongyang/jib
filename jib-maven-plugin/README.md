@@ -41,7 +41,7 @@ For information about the project, see the [Jib project README](../README.md).
 You can containerize your application easily with one command:
 
 ```shell
-mvn compile com.google.cloud.tools:jib-maven-plugin:1.8.0:build -Dimage=<MY IMAGE>
+mvn compile com.google.cloud.tools:jib-maven-plugin:2.0.0:build -Dimage=<MY IMAGE>
 ```
 
 This builds and pushes a container image for your application to a container registry. *If you encounter authentication issues, see [Authentication Methods](#authentication-methods).*
@@ -49,7 +49,7 @@ This builds and pushes a container image for your application to a container reg
 To build to a Docker daemon, use:
 
 ```shell
-mvn compile com.google.cloud.tools:jib-maven-plugin:1.8.0:dockerBuild
+mvn compile com.google.cloud.tools:jib-maven-plugin:2.0.0:dockerBuild
 ```
 
 If you would like to set up Jib as part of your Maven build, follow the guide below.
@@ -67,7 +67,7 @@ In your Maven Java project, add the plugin to your `pom.xml`:
       <plugin>
         <groupId>com.google.cloud.tools</groupId>
         <artifactId>jib-maven-plugin</artifactId>
-        <version>1.8.0</version>
+        <version>2.0.0</version>
         <configuration>
           <to>
             <image>myimage</image>
@@ -318,13 +318,18 @@ Property | Type | Default | Description
 --- | --- | --- | ---
 `jib.httpTimeout` | int | `20000` | HTTP connection/read timeout for registry interactions, in milliseconds. Use a value of `0` for an infinite timeout.
 `jib.useOnlyProjectCache` | boolean | `false` | If set to true, Jib does not share a cache between different Maven projects (i.e. `jib.baseImageCache` defaults to `[project dir]/target/jib-cache` instead of `[user cache home]/google-cloud-tools-java/jib`).
-`jib.baseImageCache` | string | `[user cache home]/google-cloud-tools-java/jib` | Sets the directory to use for caching base image layers. This cache can (and should) be shared between multiple images.
+`jib.baseImageCache` | string | *Platform-dependent*\*\*\* | Sets the directory to use for caching base image layers. This cache can (and should) be shared between multiple images.
 `jib.applicationCache` | string | `[project dir]/target/jib-cache` | Sets the directory to use for caching application layers. This cache can be shared between multiple images.
 `jib.console` | string | *None* | If set to `plain`, Jib will print plaintext log messages rather than display a progress bar during the build.
 
 *\* If you configure `args` while `entrypoint` is set to `'INHERIT'`, the configured `args` value will take precedence over the CMD propagated from the base image.*
 
 *\*\* Uses the main class defined in the `jar` task or tries to find a valid main class.*
+
+*\*\*\* The default base image cache is in the following locations on each platform:*
+ * *Linux: `[cache root]/google-cloud-tools-java/jib/`, where `[cache root]` is `$XDG_CACHE_HOME` (`$HOME/.cache/` if not set)*
+ * *Mac: `[cache root]/Google/Jib/`, where `[cache root]` is `$XDG_CACHE_HOME` (`$HOME/Library/Caches/` if not set)*
+ * *Windows: `[cache root]\Google\Jib\Cache`, where `[cache root]` is `$XDG_CACHE_HOME` (`%LOCALAPPDATA%` if not set)*
 
 ### Example
 
@@ -390,6 +395,8 @@ Prefix | Example | Type
 
 You can add arbitrary, non-classpath files to the image by placing them in a `src/main/jib` directory. This will copy all files within the `jib` folder to the image's root directory, maintaining the same structure (e.g. if you have a text file at `src/main/jib/dir/hello.txt`, then your image will contain `/dir/hello.txt` after being built with Jib).
 
+Note that Jib does not follow symbolic links in the container image.  If a symbolic link is present, _it will be removed_ prior to placing the files and directories.
+
 You can configure different directories by using the `<extraDirectories>` parameter in your `pom.xml`:
 ```xml
 <configuration>
@@ -422,8 +429,6 @@ Alternatively, the `<extraDirectories>` parameter can be used as an object to se
   </extraDirectories>
 </configuration>
 ```
-
-Note that Jib does not follow symbolic links.  If a symbolic link is present, it will be removed prior to placing the files and directories.
 
 ### Authentication Methods
 
@@ -548,6 +553,10 @@ To use a different Servlet engine base image, you can customize `<container><app
 ## Frequently Asked Questions (FAQ)
 
 See the [Jib project FAQ](../docs/faq.md).
+
+## Privacy
+
+See the [Privacy page](docs/privacy.md).
 
 ## Upcoming Features
 
